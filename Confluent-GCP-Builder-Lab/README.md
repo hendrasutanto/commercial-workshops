@@ -75,7 +75,7 @@ During the session, we will explore:
 
 An environment contains clusters and its deployed components such as Apache Flink, Connectors, ksqlDB, and Schema Registry. You have the ability to create different environments based on your company's requirements. For example, you can use environments to separate Development/Testing, Pre-Production, and Production clusters. 
 
-1. Click **+ Add Environment**. Specify an **Environment Name** and Click **Create**. 
+1. Click **+ Add cloud environment**. Specify an **Environment Name** and Click **Create**. 
 
 >**Note:** There is a *default* environment ready in your account upon account creation. You can use this *default* environment for the purpose of this workshop if you do not wish to create an additional environment.
 
@@ -83,38 +83,26 @@ An environment contains clusters and its deployed components such as Apache Flin
     <img src="images/environment.png" width=50% height=50%>
 </div>
 
-2. Select **Essentials** for Stream Governance Packages, click **Begin configuration**.
+2. Now that you have an environment, click **Create Cluster**. 
 
-<div align="center" padding=25px>
-    <img src="images/stream-governance-1.png" width=50% height=50%>
-</div>
+> **Note:** Confluent Cloud clusters are available in 4 types: Basic, Standard, Enterprise, and Dedicated. Basic is intended for development use cases so you will use that for the workshop. Basic clusters only support single zone availability. Standard, Enterprise, and Dedicated clusters are intended for production use and support Multi-zone deployments. If you are interested in learning more about the different types of clusters and their associated features and limits, refer to this [documentation](https://docs.confluent.io/current/cloud/clusters/cluster-types.html).
 
-3. Select **GCP Sydney Region** for Stream Governance Essentials, click **Continue**.
-
-<div align="center" padding=25px>
-    <img src="images/stream-governance-2.png" width=50% height=50%>
-</div>
-
-4. Now that you have an environment, click **Create Cluster**. 
-
-> **Note:** Confluent Cloud clusters are available in 3 types: Basic, Standard, and Dedicated. Basic is intended for development use cases so you will use that for the workshop. Basic clusters only support single zone availability. Standard and Dedicated clusters are intended for production use and support Multi-zone deployments. If you are interested in learning more about the different types of clusters and their associated features and limits, refer to this [documentation](https://docs.confluent.io/current/cloud/clusters/cluster-types.html).
-
-5. Chose the **Basic** cluster type. 
+3. Chose the **Basic** cluster type. 
 
 <div align="center" padding=25px>
     <img src="images/cluster-type.png" width=50% height=50%>
 </div>
 
-6. Click **Begin Configuration**. 
-7. Choose GCP as Cloud Provider and your preferred, region, and availability zone accordingly. 
-8. Specify a **Cluster Name**. For the purpose of this lab, any name will work here. 
+4. Click **Begin Configuration**. 
+5. Choose GCP as Cloud Provider and your preferred, region, and availability zone accordingly. 
+6. Specify a **Cluster Name**. For the purpose of this lab, any name will work here. 
 
 <div align="center" padding=25px>
     <img src="images/create-cluster.png" width=50% height=50%>
 </div>
 
-9. View the associated *Configuration & Cost*, *Usage Limits*, and *Uptime SLA* information before launching. 
-10. Click **Launch Cluster**. 
+7. View the associated *Configuration & Cost*, *Usage Limits*, and *Uptime SLA* information before launching. 
+8. Click **Launch Cluster**. 
 
 ***
 
