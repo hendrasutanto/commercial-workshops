@@ -541,21 +541,23 @@ The next step is to sink data from Confluent Cloud into BigQuery using the [full
 
 <div align="center">
 
-| Setting                | Value                              |
-|------------------------|------------------------------------|
-| `Topics`               | accounts_to_monitor                |
-| `Name`                 | BigQueryStorageSinkConnector_accounts_to_monitor    |
-| `Input message format` | Avro                               |
-| `Kafka API Key`        | From step 5                        |
-| `Kafka API Secret`     | From step 5                        |
-| `GCP credentials file` | Upload_your_GCP_Credentials_file   |
-| `Project ID`           | your_GCP_project_ID                |
-| `Dataset`              | your_GCP_dataset_name              |
-| `Sanitize topics`      | true                               |
-| `Sanitize field names` | true                               |
-| `Auto create tables`   | PARTITION by INGESTION TIME        |
-| `Partitioning type`    | DAY                                |
-| `Tasks`                | 1                                  |
+| Setting                           | Value                                               |
+|-----------------------------------|-----------------------------------------------------|
+| `Topics`                          | accounts_to_monitor                                 |
+| `Name`                            | BigQueryStorageSinkConnector_accounts_to_monitor    |
+| `Ingestion mode`                  | Streaming                                           |
+| `Input Kafka record value format` | Avro                                                |
+| `Input Kafka record key format`   | String                                              |
+| `Kafka API Key`                   | From step 5                                         |
+| `Kafka API Secret`                | From step 5                                         |
+| `GCP credentials file`            | Upload_your_GCP_Credentials_file                    |
+| `Project ID`                      | your_GCP_project_ID                                 |
+| `Dataset`                         | your_GCP_dataset_name                               |
+| `Sanitize topics`                 | true                                                |
+| `Sanitize field names`            | true                                                |
+| `Auto create tables`              | PARTITION by INGESTION TIME                         |
+| `Partitioning type`               | DAY                                                 |
+| `Tasks`                           | 1                                                   |
 
 </div>
 
