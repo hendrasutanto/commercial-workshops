@@ -507,7 +507,7 @@ SELECT * FROM ACCOUNTS_TO_MONITOR EMIT CHANGES;
 
 ***
 
-## <a name="step-11"></a>Pull Queries
+## <a name="step-11"></a>Pull and Push Queries
 
 Building on our Fraud Detection example from the last step, let’s say our fraud service wants to check on high frequency accounts. The fraud service can send a pull query via the ksql API, today we will just mock it with the UI. Then we can monitor the activity for a suspicious account.
 
