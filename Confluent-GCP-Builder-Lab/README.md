@@ -170,7 +170,7 @@ An environment contains clusters and its deployed components such as Apache Flin
 
 ## <a name="step-6"></a>Create Datagen Connectors for Users and Stocks
 
-The next step is to produce sample data using the Datagen Source connector. You will create three Datagen Source connectors. One connector will send sample customer data to **users_topic** topic, the other connector will send sample product data to **stocks_topic** topic.
+The next step is to produce sample data using the Datagen Source connector. You will create two Datagen Source connectors. One connector will send sample customer data to **users_topic** topic, the other connector will send sample product data to **stocks_topic** topic.
 
 1. First, you will create the connector that will send data to **users_topic**. From the Confluent Cloud UI, click on the **Connectors** tab on the navigation menu. Click on the **Datagen Source** icon.
 
@@ -178,7 +178,8 @@ The next step is to produce sample data using the Datagen Source connector. You 
     <img src="images/connectors.png" width=75% height=75%>
 </div>
 
-2. Enter the following configuration details. The remaining fields can be left blank.
+2. When prompted with the **Launch Sample Data** popup, click **Additional configuration**.
+3. Follow the onscreen instructions and enter the following configuration details. The remaining fields can be left blank.
 
 <div align="center">
 
@@ -188,8 +189,9 @@ The next step is to produce sample data using the Datagen Source connector. You 
 | api key                            | [*from step 5* ](#step-5)    |
 | api secret                         | [*from step 5* ](#step-5)    |
 | topic                              | users_topic                  |
-| output message format              | AVRO                         |
-| quickstart                         | Users                        |
+| output record value format         | AVRO                         |
+| template                           | Users                        |
+| JSON output decimal format         | NUMERIC                      |
 | max interval between messages (ms) | 1000                         |
 | tasks                              | 1                            |
 </div>
@@ -215,7 +217,7 @@ The next step is to produce sample data using the Datagen Source connector. You 
 
 5. Next, create the second connector that will send data to **stocks_topic**. Click on **+ Add Connector** and then the **datagen Source** icon again. 
 
-6. Enter the following configuration details. The remaining fields can be left blank. 
+6. Follow the onscreen instructions and enter the following configuration details. The remaining fields can be left blank. 
 
 <div align="center">
 
@@ -225,8 +227,9 @@ The next step is to produce sample data using the Datagen Source connector. You 
 | api key                            | [*from step 5* ](#step-5)    |
 | api secret                         | [*from step 5* ](#step-5)    |
 | topic                              | stocks_topic                 |
-| output message format              | AVRO                         |
-| quickstart                         | Stocks trade                 |
+| output record value format         | AVRO                         |
+| template                           | Stocks trade                 |
+| JSON output decimal format         | NUMERIC                      |
 | max interval between messages (ms) | 1000                         |
 | tasks                              | 1                            |
 </div>
