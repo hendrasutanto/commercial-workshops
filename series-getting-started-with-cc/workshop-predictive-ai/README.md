@@ -28,38 +28,25 @@
 
 1. Create a Confluent Cloud Account.
     - Sign up for a Confluent Cloud account [here](https://www.confluent.io/confluent-cloud/tryfree/).
-    - Once you have signed up and logged in, click on the menu icon at the upper right hand corner, click on “Billing & payment”, then enter payment details under “Payment details & contacts”. A screenshot of the billing UI is included below.
-
-2. Install Python 3.8+
-   > If you are using a Linux distribution, chances are you already have Python 3 pre-installed. To see which version of Python 3 you have installed, open a command prompt and run
-   ```
-    python3 --version
-   ```
-
-   If you need to install python3, [this may help](https://docs.python-guide.org/starting/install3/linux/)
-
-3. Install python virtual environment: ```python3 -m pip install venv``` or ```python3 -m pip install virtualenv```
-   > If ```/usr/bin/python3: No module named pip``` error shows up, install python3-pip using
-   > ```
-   > sudo apt-get install -y python3-pip
-   > ```
-
-4. Clone this repo:
-   ```
-   git clone git@github.com:confluentinc/commercial-workshops.git
-   ```
-   or
-   ```
-   git clone https://github.com/confluentinc/commercial-workshops.git
-   ```
-
-5. Install confluent cloud CLI based on your OS (https://docs.confluent.io/confluent-cli/current/install.html)
+    - Once you have signed up and logged in, click on the menu icon at the upper right hand corner, click on “Billing & payment”, then enter promo code ”CONFLUENTDEV1” details under “Payment details & contacts” to delay entering a credit card for 30 days. A screenshot of the billing UI is included below.
 
 > **Note:** You will create resources during this workshop that will incur costs. When you sign up for a Confluent Cloud account, you will get free credits to use in Confluent Cloud. This will cover the cost of resources created during the workshop. More details on the specifics can be found [here](https://www.confluent.io/confluent-cloud/tryfree/).
 
 <div align="center" padding=25px>
     <img src="images/billing.png" width=75% height=75%>
 </div>
+
+2. The latest stable versions of the following web browsers are supported by Confluent Cloud Console:
+    - Apple Safari
+    - Google Chrome
+    - Mozilla Firefox
+
+3. Clone this repo:
+   ```
+   git clone https://github.com/hendrasutanto/commercial-workshops.git
+   ```
+
+4. Install confluent cloud CLI based on your OS (https://docs.confluent.io/confluent-cli/current/install.html)
 
 ***
 
