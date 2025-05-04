@@ -12,8 +12,8 @@
 3. [Create Flink Compute Pool](#step-3)
 4. [Create Topics and walk through Confluent Cloud Dashboard](#step-4)
 5. [Create Datagen Connectors for Customers, Credit Cards, and Transactions](#step-5)
-6. [Perform complex joins using Flink to combine the records into one topic](#step-6)
-7. [Consume feature set topic and predict fraud transactions](#step-7)
+6. [Perform Complex Joins using Flink to Combine the Records into One Topic](#step-6)
+7. [Aggregate and Filter Transactions using Flink for Potential Fraud](#step-7)
 8. [Connect Flink with Bedrock Model](#step-8)
 9. [Flink Monitoring](#step-9)
 10. [Clean Up Resources](#step-10)
@@ -397,92 +397,125 @@ The next step is to produce sample data using the Datagen Source connector. You 
 * You should now be able to see the messages within the UI. You can view the specific messages by clicking the icon.
 ***
 
-## <a name="step-6"></a>Perform complex joins using Flink to combine the records into one topic
+## <a name="step-6"></a>Perform Complex Joins using Flink to Combine the Records into One Topic
 Kafka topics and schemas are always in sync with our Flink cluster. Any topic created in Kafka is visible directly as a table in Flink, and any table created in Flink is visible as a topic in Kafka. Effectively, Flink provides a SQL interface on top of Confluent Cloud.
 
 1. From the Confluent Cloud UI, click on the **Environments** tab on the navigation menu. Choose your environment.
 2. Click on *Flink* from the menu pane
 3. Choose the compute pool created in the previous steps.
 4. Click on **Open SQL workspace** button on the top right.
-5. Create an **aggregated_transactions** table by running the following SQL query.
+5. Create an ```enriched_transactions_regular_join``` table by running the following SQL query.
 ```sql
-CREATE TABLE aggregated_transactions (
-    transaction_id INT NOT NULL PRIMARY KEY NOT ENFORCED,
+CREATE TABLE enriched_transactions_regular_join (
+    transaction_id BIGINT NOT NULL PRIMARY KEY NOT ENFORCED,
     credit_card_number BIGINT,
+    maximum_limit INT,
     customer_email STRING,
     total_amount INT,
-    average_spending_amount INT,
-    transaction_timestamp TIMESTAMP(3),
-    WATERMARK FOR transaction_timestamp AS transaction_timestamp - INTERVAL '1' SECOND
-) WITH (
-    'changelog.mode' = 'upsert'
+    average_spending_amount INT
+)
+DISTRIBUTED BY (transaction_id) INTO 1 BUCKETS
+WITH (
+    'changelog.mode' = 'append'
 );
 ```
 
 6. Add a new query by clicking on + icon in the left of previous query to Insert records to the above table by running the following query.
 ```sql
-INSERT INTO aggregated_transactions
+INSERT INTO enriched_transactions_regular_join
 SELECT 
-    t.transaction_id,
-    t.credit_card_number,
-    cust.customer_email,
-    t.amount,
-    cust.average_spending_amount,
-    TO_TIMESTAMP(t.transaction_timestamp) AS transaction_timestamp
-FROM transactions t
-INNER JOIN credit_cards cc ON t.credit_card_number = cc.credit_card_number
-INNER JOIN customers cust ON cc.customer_id = cust.customer_id
-```
-7. Now we will create a ```feature_set``` topic to put all the transactions in specific windows. To perform the same run the following query.
-```sql
-CREATE TABLE feature_set (
-    credit_card_number BIGINT PRIMARY KEY NOT ENFORCED,
-    customer_email STRING,
-    total_amount INT,
-    transaction_count BIGINT,
-    average_spending_amount INT,
-    window_start TIMESTAMP(3),
-    window_end TIMESTAMP(3)
-) WITH (
-  'changelog.mode' = 'upsert',
-  'value.format' = 'json-registry',
-  'key.format' = 'json-registry'
-)
-```
-```sql
-INSERT INTO feature_set
-  WITH windowed_transactions AS (
-SELECT 
-    credit_card_number,
-    SUM(total_amount) AS total_amount,
-    COUNT(transaction_id) AS transaction_count,
-    window_start,
-    window_end
-FROM 
-  TABLE(
-    TUMBLE(TABLE aggregated_transactions, DESCRIPTOR(transaction_timestamp),INTERVAL '10' MINUTES)
-  )
-GROUP BY credit_card_number, window_start,window_end
-)
-SELECT DISTINCT
-  t.credit_card_number,
-  t.customer_email,
-  wt.total_amount,
-  wt.transaction_count,
-  t.average_spending_amount,
-  wt.window_start,
-  wt.window_end
- FROM 
-  aggregated_transactions t
- JOIN
-   windowed_transactions wt
- ON
-  wt.credit_card_number = t.credit_card_number
- AND
-  t.transaction_timestamp BETWEEN wt.window_start AND wt.window_end
+    transactions.transaction_id,
+    credit_cards.credit_card_number,
+    credit_cards.maximum_limit,
+    customers.customer_email,
+    transactions.amount,
+    customers.average_spending_amount
+FROM transactions
+INNER JOIN credit_cards ON transactions.customer_id = credit_cards.customer_id
+INNER JOIN customers ON transactions.customer_id = customers.customer_id
 ```
 
-Windows are central to processing infinite streams. Windows split the stream into “buckets” of finite size, over which you can apply computations. This document focuses on how windowing is performed in Confluent Cloud for Apache Flink and how you can benefit from windowed functions.
+> **Note:** Regular joins are the most generic type of join in which any new record, or changes to either side of the join, are visible and affect the entirety of the join result.
+> For example, if there is a new record on the left side, it will be joined with all the previous and future records on the right side when the product id equals.
+> This operation has important operational implications: it requires to keep both sides of the join input in Flink state forever.
+> Thus, the required state for computing the query result might grow infinitely depending on the number of distinct input rows of all input tables and intermediate join results.
+
+7. The regular join will produce a lot of new records whenever the customer updates their email or credit card information, which is not quite the result that we are looking for. So let's go ahead and **Stop** the above Insert statement.
+
+8. The ```transactions``` stream needs to join with the ```customers``` and ```credit_cards``` information as of the time of the ```transactions```. To achieve this, we need to use a **temporal join** because the join results depend on the time relationship of the rows.
+
+9. **Temporal Table Join** requires primary key in both ```customers``` and ```credit_cards``` tables. So let's go ahead and re-key both tables with the following queries.
+```sql
+CREATE TABLE customers_rekeyed (
+    customer_id INT NOT NULL PRIMARY KEY NOT ENFORCED,
+    customer_email STRING,
+    average_spending_amount INT
+)
+DISTRIBUTED BY (customer_id) INTO 1 BUCKETS
+WITH (
+    'changelog.mode' = 'upsert'
+);
+```
+```sql
+INSERT INTO customers_rekeyed
+SELECT
+  customer_id,
+  customer_email,
+  average_spending_amount
+FROM customers
+```
+```sql
+CREATE TABLE credit_cards_rekeyed (
+    customer_id INT NOT NULL PRIMARY KEY NOT ENFORCED,
+    credit_card_number BIGINT,
+    maximum_limit INT
+)
+DISTRIBUTED BY (customer_id) INTO 1 BUCKETS
+WITH (
+    'changelog.mode' = 'upsert'
+);
+```
+```sql
+INSERT INTO credit_cards_rekeyed
+SELECT
+  customer_id,
+  credit_card_number,
+  maximum_limit
+FROM credit_cards
+```
+
+10. Create an ```enriched_transactions_temporal_join``` table by running the following SQL query.
+```sql
+CREATE TABLE enriched_transactions_temporal_join (
+    transaction_id BIGINT NOT NULL PRIMARY KEY NOT ENFORCED,
+    credit_card_number BIGINT,
+    maximum_limit INT,
+    customer_email STRING,
+    amount INT,
+    average_spending_amount INT
+)
+DISTRIBUTED BY (transaction_id) INTO 1 BUCKETS
+WITH (
+    'changelog.mode' = 'append'
+);
+```
+
+11. Perform the **temporal join** and insert the result of the join into ```enriched_transactions_temporal_join``` by running the following SQL query.
+```sql
+INSERT INTO enriched_transactions_temporal_join
+SELECT 
+    transactions.transaction_id,
+    credit_cards_rekeyed.credit_card_number,
+    credit_cards_rekeyed.maximum_limit,
+    customers_rekeyed.customer_email,
+    transactions.amount,
+    customers_rekeyed.average_spending_amount
+FROM transactions
+INNER JOIN credit_cards_rekeyed FOR SYSTEM_TIME AS OF transactions.`$rowtime` ON transactions.customer_id = credit_cards_rekeyed.customer_id
+INNER JOIN customers_rekeyed FOR SYSTEM_TIME AS OF transactions.`$rowtime`  ON transactions.customer_id = customers_rekeyed.customer_id
+```
+
+While it is not covered in this lab, ***Windows*** are central to processing infinite streams. Windows split the stream into “buckets” of finite size, over which you can apply computations. This document focuses on how windowing is performed in Confluent Cloud for Apache Flink and how you can benefit from windowed functions.
 
 Flink provides several window table-valued functions (TVF) to divide the elements of your table into windows, including:
 
@@ -493,34 +526,53 @@ b. [Hop Windows](https://docs.confluent.io/cloud/current/flink/reference/queries
 c. [Cumulate Windows](https://docs.confluent.io/cloud/current/flink/reference/queries/window-tvf.html#flink-sql-window-tvfs-cumulate)
 <br> 
 
-## <a name="step-7"></a>Consume feature set topic and predict fraud transactions
-The next step is to create a consumer for feature set topic and predict the fraudulent transaction.
+***
 
-1. Update ```client.properties``` file with an additional configuration at the end of the file like following.
-```bash
-auto.offset.reset=earliest
-enable.auto.commit=false
-group.id=FraudDetectorApplication
-```
+## <a name="step-7"></a>Aggregate and Filter Transactions using Flink for Potential Fraud
+In fraud detection, aggregation enhances analysis by providing insights into customer spending habits.
+In the next steps, we will use Flink to perform aggregation to find the total spending amount and the number of transactions within 10-minute intervals.
+After that, we will define a basic business rules to filter out potential fraudulent transactions based on the aggregated number of transactions.
 
-2. Run the ```fraud_detector.py``` to determine the fraudulent transactions from the feature set and produce the transactions to the topic created above.
-```python
-python3 fraud_detector.py
-```
-
-3. Now you can see few messages in the *fraudulent_transactions* topic. When you see ```Polling for messages...``` continously you can stop the consumer by clicking ```Ctrl+c```
-
-> **Note:** This demonstration simulates a sample condition as a machine learning model to showcase the capabilities of real-time streaming with Confluent Cloud.
-In this setup, a data engineer can extract the required features from various sources into separate topics. These topics enable data scientists to leverage the curated feature sets to develop and train machine learning models outside of the Confluent Cloud environment.
-This illustrates the power of integrating Confluent Cloud for efficient data streaming and feature engineering in the ML workflow.
-
-4. We shall see some fraudulent transactions under ***fraudulent_transactions*** topic by running the following command in flink
+1. Now we will create a ```potential_fraud``` topic to put all the potential fraudulent transactions into the topic by running the following SQL query.
 ```sql
-SELECT details FROM fraudulent_transactions
+CREATE TABLE potential_fraud (
+    transaction_id BIGINT PRIMARY KEY NOT ENFORCED,
+    credit_card_number BIGINT,
+    maximum_limit INT,
+    customer_email STRING,
+    amount INT,
+    average_spending_amount INT,
+    total_amount INT,
+    transaction_count BIGINT
+) 
+  DISTRIBUTED BY (`transaction_id`) INTO 1 BUCKETS
+  WITH (
+  'changelog.mode' = 'append'
+)
 ```
-<div align="center" padding=25px>
-    <img src="images/fraud_transactions.png" width=75% height=75%>
-</div>
+
+2. When you perform aggregation in SQL, generally the query reduces the number of result rows to one for every group specified in the ```GROUP BY```. In the case, we do not want to reduce the number of result rows into a single row for every group; instead, we want to produce an aggregated value for every input row. In this case, OVER aggregations can be used to serve as the basis for more advanced queries like this.
+```sql
+INSERT INTO potential_fraud
+SELECT 
+    transaction_id,
+    credit_card_number,
+    maximum_limit,
+    customer_email,
+    amount,
+    average_spending_amount,
+    SUM(amount) OVER (
+        PARTITION BY `credit_card_number`
+        ORDER BY `$rowtime`
+        RANGE BETWEEN INTERVAL '10' MINUTES PRECEDING AND CURRENT ROW
+    ) AS total_amount,
+    COUNT(credit_card_number) OVER (
+        PARTITION BY `credit_card_number`
+        ORDER BY `$rowtime`
+        RANGE BETWEEN INTERVAL '10' MINUTES PRECEDING AND CURRENT ROW
+    ) AS transaction_count
+FROM enriched_transactions_temporal_join
+```
 
 ## <a name="step-8"></a>Connect Flink with Bedrock Model
 The next step is to create a integrated model from AWS Bedrock with Flink on Confluent Cloud.
