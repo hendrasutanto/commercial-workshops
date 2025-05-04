@@ -14,10 +14,9 @@
 5. [Create Datagen Connectors for Customers, Credit Cards, and Transactions](#step-5)
 6. [Perform Complex Joins using Flink to Combine the Records into One Topic](#step-6)
 7. [Aggregate and Filter Transactions using Flink for Potential Fraud](#step-7)
-8. [Connect Flink with Bedrock Model](#step-8)
-9. [Flink Monitoring](#step-9)
-10. [Clean Up Resources](#step-10)
-11. [Confluent Resources and Further Testing](#step-11)
+8. [Connect Flink with Bedrock Model (Optional)](#step-8)
+9. [Clean Up Resources](#step-9)
+10. [Confluent Resources and Further Testing](#step-10)
 ***
 
 ## **Prerequisites**
@@ -602,44 +601,12 @@ c. [Cumulate Windows](https://docs.confluent.io/cloud/current/flink/reference/qu
 
 ***
 
-## <a name="step-8"></a>Connect Flink with Bedrock Model
+## <a name="step-8"></a>Connect Flink with Bedrock Model (Optional)
 The next step is to create a integrated model from AWS Bedrock with Flink on Confluent Cloud.
 
-1. First, you will create the model connection using Confluent CLI. If you've never installed one, you could install it based on your OS (https://docs.confluent.io/confluent-cli/current/install.html) and login to confluent.
-```bash
-confluent login
-```
+1. Navigate to Amazon Bedrock Service > Model Access > choose Enable specific models.
 
-2. Make sure you prepare your AWS API Key and Secret to create connection to the Bedrock.
-
-3. Make sure you are using the right environment and right cluster to create the connection. Verify by performing the following.
-```bash
-confluent environment list
-confluent environment use <env-id>
-confluent kafka cluster list
-confluent kafka cluster use <cluster-id>
-```
-
-> **Note:** If you doesn't have any AWS user you could check the step below to create user with full access to Bedrock and creating API key and secret. You could skip this step if you already have user and api key with full access to bedrock.
-
->Go to **AWS IAM>User** and create User
-<div align="center">
-    <img src="images/bedrock0-1.png" width=100% height=100%>
-</div>
-
->Create User with attach policies for Bedrock Full Access
-<div align="center">
-    <img src="images/bedrock0-2.png" width=100% height=100%>
-</div>
-
-<div align="center">
-    <img src="images/bedrock0-3.png" width=100% height=100%>
-</div>
-
->Create API Key by search your user that has been created and click on the "Create Access Key"
-<div align="center">
-    <img src="images/bedrock0-4.png" width=100% height=100%>
-</div>
+2. Select Claude 3 Sonnet from Anthropic. Choose **Next**. Then, choose **Submit**.
 
 <div align="center">
     <img src="images/bedrock-1.png" width=100% height=100%>
@@ -649,10 +616,52 @@ confluent kafka cluster use <cluster-id>
     <img src="images/bedrock-2.png" width=100% height=100%>
 </div>
 
+3. Wait a few minutes and refresh your page to confirm that the model's Access status has changed from **Available to request** to **Access granted**.
+
+4. You will also need command line access tokens. You could skip this step if you already have user and api key with full access to bedrock. Otherwise, follow the steps below to generate these credentials:
+
+* Navigate to the IAM Console page. Choose **Users** under the **Access management** section.
+
+* Choose **Create user** or select an existing user.
+
+<div align="center">
+    <img src="images/bedrock-3.png" width=100% height=100%>
+</div>
+
+* In the **Permission options**, choose **Attach policies directly**.
+
+* From the **Permission policies**, search and select **AmazonBedrockFullAccess** and choose **Next**. Then review and choose **Create user**.
+
+<div align="center">
+    <img src="images/bedrock-4.png" width=100% height=100%>
+</div>
+
+* Now, choose the user created in the users list and choose **Create access key** under **Access key 1**.
+
+<div align="center">
+    <img src="images/bedrock-5.png" width=100% height=100%>
+</div>
+
+* When asked about Use case, select **Command Line Interface (CLI)** and select the Confirmation at the bottom of the screen, choose **Next**, choose **Create access key**. Ensure to choose **Show** and save your Access key and Secret access key.
+
+* Copy the Access key and Secret access key in a secured place.
+
+5. First, you will create the model connection using Confluent CLI. If you've never installed one, you could install it based on your OS (https://docs.confluent.io/confluent-cli/current/install.html) and login to confluent.
 ```bash
-confluent flink connection create my-connection --cloud aws --region us-east-1 --type bedrock --endpoint https://bedrock-runtime.us-east-1.amazonaws.com/model/meta.llama3-8b-instruct-v1:0/invoke --aws-access-key <API Key> --aws-secret-key <API Secret>
+confluent login
 ```
-3. After creating connection, we need to create the model in Flink before we could invoke on our query.
+
+6. You will use prepared AWS API Key and Secret from previous step to create connection to the Bedrock. Replace <API Key> and <API Secret> with your prepared API Key and Secret. Please also replace region in --region parameter with region where you create your Flink compute pool.
+```bash
+confluent flink connection create my-connection --cloud aws --region <your-flink-region> --type bedrock --endpoint https://bedrock-runtime.us-west-2.amazonaws.com/model/us.anthropic.claude-3-sonnet-20240229-v1:0/invoke --aws-access-key <API Key> --aws-secret-key <API Secret>
+```
+> **Note:** The model endpoint should be ```https://bedrock-runtime.<REGION>.amazonaws.com/model/<MODEL_ID>/invoke```.
+
+<div align="center">
+    <img src="images/bedrock-6.png" width=100% height=100%>
+</div>
+
+7. After creating connection, go back to the Flink SQL workspace to create the model in Flink before we could invoke on our query.
 ```sql
 CREATE MODEL FraudDetectionModel
 INPUT (details STRING)
@@ -666,7 +675,7 @@ WITH (
 );
 ```
 
-5. Now let's invoke the model and get the results.
+8. Now let's invoke the model and get the results.
 
 ```sql
 SELECT * FROM potential_fraud, LATERAL TABLE(ML_PREDICT('FraudDetectionModel',
@@ -680,29 +689,16 @@ SELECT * FROM potential_fraud, LATERAL TABLE(ML_PREDICT('FraudDetectionModel',
   )
 ));
 ```
-<div align="center" padding=25px>
-    <img src="images/ai_messages.png" width=75% height=75%>
+
+9. The AI Response can then be used to assist human operator in detecting fraudulent transactions.
+
+<div align="center">
+    <img src="images/bedrock-7.png" width=100% height=100%>
 </div>
 
 ***
 
-## <a name="step-9"></a>Flink Monitoring
-1. Status of all the Flink Jobs is available under **Flink Statements** Tab.
-   
-<div align="center">
-    <img src="images/flink-statements-status.png" width=75% height=75%>
-</div>
-
-2. Utilization information.
-<div align="center">
-    <img src="images/flink-compute-pool-tile.png" width=40% height=40%>
-</div>
-
-<br>
-
-***
-
-## <a name="step-10"></a>Clean Up Resources
+## <a name="step-9"></a>Clean Up Resources
 
 Deleting the resources you created during this workshop will prevent you from incurring additional charges. 
 
@@ -728,7 +724,7 @@ Deleting the resources you created during this workshop will prevent you from in
 
 *** 
 
-## <a name="step-11"></a>Confluent Resources and Further Testing
+## <a name="step-10"></a>Confluent Resources and Further Testing
 
 Here are some links to check out if you are interested in further testing:
 - [Confluent Cloud Documentation](https://docs.confluent.io/cloud/current/overview.html)
