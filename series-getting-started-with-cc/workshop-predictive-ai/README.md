@@ -655,7 +655,7 @@ confluent login
 confluent environment list
 ```
 ```bash
-confluent environment <env-id>
+confluent environment use <env-id>
 ```
 
 7. You will use prepared AWS API Key and Secret from previous step to create connection to the Bedrock. Replace `<API Key>` and `<API Secret>` with your prepared API Key and Secret. Please also replace region in --region parameter with region where you create your Flink compute pool.
