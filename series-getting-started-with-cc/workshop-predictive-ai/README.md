@@ -644,6 +644,10 @@ The next step is to create a integrated model from AWS Bedrock with Flink on Con
 
 * When asked about Use case, select **Command Line Interface (CLI)** and select the Confirmation at the bottom of the screen, choose **Next**, choose **Create access key**. Ensure to choose **Show** and save your Access key and Secret access key.
 
+<div align="center">
+    <img src="images/bedrock-6.png" width=100% height=100%>
+</div>
+
 * Copy the Access key and Secret access key in a secured place.
 
 5. First, you will create the model connection using Confluent CLI. If you've never installed one, you could install it based on your OS (https://docs.confluent.io/confluent-cli/current/install.html) and login to confluent.
@@ -658,7 +662,7 @@ confluent flink connection create my-connection --cloud aws --region <your-flink
 > **Note:** The model endpoint should be ```https://bedrock-runtime.<REGION>.amazonaws.com/model/<MODEL_ID>/invoke```.
 
 <div align="center">
-    <img src="images/bedrock-6.png" width=100% height=100%>
+    <img src="images/bedrock-7.png" width=100% height=100%>
 </div>
 
 7. After creating connection, go back to the Flink SQL workspace to create the model in Flink before we could invoke on our query.
@@ -693,7 +697,7 @@ SELECT * FROM potential_fraud, LATERAL TABLE(ML_PREDICT('FraudDetectionModel',
 9. The AI Response can then be used to assist human operator in detecting fraudulent transactions.
 
 <div align="center">
-    <img src="images/bedrock-7.png" width=100% height=100%>
+    <img src="images/bedrock-8.png" width=100% height=100%>
 </div>
 
 ***
