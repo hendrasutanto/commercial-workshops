@@ -37,12 +37,7 @@
     - Google Chrome
     - Mozilla Firefox
 
-3. Clone this repo:
-   ```
-   git clone https://github.com/hendrasutanto/commercial-workshops.git
-   ```
-
-4. Install confluent cloud CLI based on your OS (https://docs.confluent.io/confluent-cli/current/install.html)
+3. Install confluent cloud CLI based on your OS (https://docs.confluent.io/confluent-cli/current/install.html)
 
 ***
 
