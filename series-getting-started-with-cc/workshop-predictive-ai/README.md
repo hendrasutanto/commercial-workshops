@@ -515,6 +515,7 @@ INNER JOIN credit_cards_rekeyed FOR SYSTEM_TIME AS OF transactions.`$rowtime` ON
 INNER JOIN customers_rekeyed FOR SYSTEM_TIME AS OF transactions.`$rowtime`  ON transactions.customer_id = customers_rekeyed.customer_id
 ```
 
+> **Note:** Watch [this video](https://www.youtube.com/watch?v=ChiAXgTuzaA), David Anderson and Dan Weston talk about how and when to use temporal joins to combine your data.
 <br> 
 
 ***
