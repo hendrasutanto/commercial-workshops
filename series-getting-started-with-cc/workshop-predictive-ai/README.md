@@ -154,14 +154,14 @@ An environment contains clusters and its deployed components such as Apache Flin
 
 2. Click on **Cluster Settings**. This is where you can find your *Cluster ID, Bootstrap Server, Cloud Details, Cluster Type,* and *Capacity Limits*.
 3. On the same navigation menu, select **Topics** and click **Create Topic**. 
-4. Enter ```customers``` as the topic name, ```1``` as the number of partitions, skip the data contract and then click **Create with defaults**.'
+4. Enter `customers` as the topic name, `1` as the number of partitions, skip the data contract and then click **Create with defaults**.
 
 <div align="center" padding=25px>
     <img src="images/create-topic.png" width=50% height=50%>
 </div>
 
-5. Repeat the previous step and create a second topic name ```credit_cards``` and ```1``` as the number of partitions and skip the data contract.
-6. Repeat the previous step and create a second topic name ```transactions``` and ```1``` as the number of partitions and skip the data contract.
+5. Repeat the previous step and create a second topic name `credit_cards` and `1` as the number of partitions and skip the data contract.
+6. Repeat the previous step and create a second topic name `transactions` and `1` as the number of partitions and skip the data contract.
 
 > **Note:** Topics have many configurable parameters. A complete list of those configurations for Confluent Cloud can be found [here](https://docs.confluent.io/cloud/current/using/broker-config.html). If you are interested in viewing the default configurations, you can view them in the Topic Summary on the right side. 
 
@@ -170,9 +170,9 @@ An environment contains clusters and its deployed components such as Apache Flin
 ***
 
 ## <a name="step-5"></a>Create Datagen Connectors for Customers, Credit Cards, and Transactions
-The next step is to produce sample data using the Datagen Source connector. You will create three Datagen Source connectors. One connector will send sample customer data to ```customers``` topic, the other connector will send sample credit card data to ```credit_cards``` topic, and the final connector will send sample transaction data to ```transactions``` topic.
+The next step is to produce sample data using the Datagen Source connector. You will create three Datagen Source connectors. One connector will send sample customer data to `customers` topic, the other connector will send sample credit card data to `credit_cards` topic, and the final connector will send sample transaction data to `transactions` topic.
 
-1. First, you will create the connector that will send data to ```customers```. From the Confluent Cloud UI, click on the **Connectors** tab on the navigation menu. Click on the **Datagen Source** icon.
+1. First, you will create the connector that will send data to `customers`. From the Confluent Cloud UI, click on the **Connectors** tab on the navigation menu. Click on the **Datagen Source** icon.
 
 <div align="center" padding=25px>
     <img src="images/connectors.png" width=75% height=75%>
@@ -254,8 +254,8 @@ The next step is to produce sample data using the Datagen Source connector. You 
     <img src="images/connectors-5.png" width=75% height=75%>
 </div>
 
-8. After few seconds Connector would be provisioned and running. Check for messages in the ```customers``` topic by navigating to the topics section.
-9. Repeat the same steps to create a connector for ```credit_cards``` topic by using the below schema but use existing API key this time.
+8. After few seconds Connector would be provisioned and running. Check for messages in the `customers` topic by navigating to the topics section.
+9. Repeat the same steps to create a connector for `credit_cards` topic by using the below schema but use existing API key this time.
 <div align="center" padding=25px>
     <img src="images/connectors-6.png" width=75% height=75%>
 </div>
@@ -308,7 +308,7 @@ The next step is to produce sample data using the Datagen Source connector. You 
     <img src="images/connectors-7.png" width=75% height=75%>
 </div>
 
-10. Repeat the same steps to create a connector for ```transactions``` topic by using the below schema but use existing API key this time.
+10. Repeat the same steps to create a connector for `transactions` topic by using the below schema but use existing API key this time.
 <div align="center" padding=25px>
     <img src="images/connectors-6.png" width=75% height=75%>
 </div>
@@ -384,7 +384,7 @@ The next step is to produce sample data using the Datagen Source connector. You 
 > * Click on the *Connector Name*, go to *Settings*, and re-enter your API key and secret. Double check there are no extra spaces at the beginning or end of the key and secret that you may have accidentally copied and pasted.
 > * If neither of these steps work, try creating another Datagen connector.
 
-11. You can view the sample data flowing into topics in real time. Navigate to  the **Topics** tab and then click on the ```customers```, ```credit_cards```, and ```transactions```. You can view the production and consumption throughput metrics here.
+11. You can view the sample data flowing into topics in real time. Navigate to  the **Topics** tab and then click on the `customers`, `credit_cards`, and `transactions`. You can view the production and consumption throughput metrics here.
 
 12. Click on **Messages**.
 
@@ -398,7 +398,7 @@ Kafka topics and schemas are always in sync with our Flink cluster. Any topic cr
 2. Click on *Flink* from the menu pane
 3. Choose the compute pool created in the previous steps.
 4. Click on **Open SQL workspace** button on the top right.
-5. Create an ```enriched_transactions_regular_join``` table by running the following SQL query.
+5. Create an `enriched_transactions_regular_join` table by running the following SQL query.
 ```sql
 CREATE TABLE enriched_transactions_regular_join (
     transaction_id BIGINT NOT NULL PRIMARY KEY NOT ENFORCED,
@@ -434,16 +434,16 @@ INNER JOIN customers ON transactions.customer_id = customers.customer_id
 > This operation has important operational implications: it requires to keep both sides of the join input in Flink state forever.
 > Thus, the required state for computing the query result might grow infinitely depending on the number of distinct input rows of all input tables and intermediate join results.
 
-7. Observe the enriched records in ```enriched_transactions_regular_join``` table by running the following query.
+7. Observe the enriched records in `enriched_transactions_regular_join` table by running the following query.
 ```sql
 SELECT * FROM enriched_transactions_regular_join
 ```
 
 8. The regular join will produce new records whenever the customer updates their email or credit card information, which is not quite the result that we are looking for. So let's go ahead and **Stop** the above **Insert** and **Select** statement.
 
-9. The ```transactions``` stream needs to join with the ```customers``` and ```credit_cards``` information as of the time of the ```transactions```. To achieve this, we need to use a **temporal join** because the join results depend on the time relationship of the rows.
+9. The `transactions` stream needs to join with the `customers` and `credit_cards` information as of the time of the `transactions`. To achieve this, we need to use a **temporal join** because the join results depend on the time relationship of the rows.
 
-10. **Temporal Table Join** requires primary key in both ```customers``` and ```credit_cards``` tables. So let's go ahead and re-key both tables with the following queries.
+10. **Temporal Table Join** requires primary key in both `customers` and `credit_cards` tables. So let's go ahead and re-key both tables with the following queries.
 ```sql
 CREATE TABLE customers_rekeyed (
     customer_id INT NOT NULL PRIMARY KEY NOT ENFORCED,
@@ -483,7 +483,7 @@ SELECT
 FROM credit_cards
 ```
 
-11. Create an ```enriched_transactions_temporal_join``` table by running the following SQL query.
+11. Create an `enriched_transactions_temporal_join` table by running the following SQL query.
 ```sql
 CREATE TABLE enriched_transactions_temporal_join (
     transaction_id BIGINT NOT NULL PRIMARY KEY NOT ENFORCED,
@@ -499,7 +499,7 @@ WITH (
 );
 ```
 
-12. Perform the **temporal join** and insert the result of the join into ```enriched_transactions_temporal_join``` by running the following SQL query.
+12. Perform the **temporal join** and insert the result of the join into `enriched_transactions_temporal_join` by running the following SQL query.
 ```sql
 INSERT INTO enriched_transactions_temporal_join
 SELECT 
@@ -516,7 +516,7 @@ INNER JOIN customers_rekeyed FOR SYSTEM_TIME AS OF transactions.`$rowtime`  ON t
 
 > **Note:** Watch [this video](https://www.youtube.com/watch?v=ChiAXgTuzaA), David Anderson and Dan Weston talk about how and when to use temporal joins to combine your data.
 
-13. Observe the enriched records in ```enriched_transactions_temporal_join``` table by running the following query.
+13. Observe the enriched records in `enriched_transactions_temporal_join` table by running the following query.
 ```sql
 SELECT * FROM enriched_transactions_temporal_join
 ```
@@ -531,7 +531,7 @@ In fraud detection, aggregation enhances analysis by providing insights into cus
 In the next steps, we will use Flink to perform aggregation to find the total spending amount and the number of transactions within 10-minute intervals.
 After that, we will define a basic business rules to filter out potential fraudulent transactions based on the aggregated number of transactions.
 
-1. Now we will create a ```potential_fraud``` topic to put all the potential fraudulent transactions into the topic by running the following SQL query.
+1. Now we will create a `potential_fraud` topic to put all the potential fraudulent transactions into the topic by running the following SQL query.
 ```sql
 CREATE TABLE potential_fraud (
     transaction_id BIGINT PRIMARY KEY NOT ENFORCED,
@@ -549,7 +549,7 @@ CREATE TABLE potential_fraud (
 )
 ```
 
-2. When you perform aggregation in SQL, generally the query reduces the number of result rows to one for every group specified in the ```GROUP BY```. In the case, we do not want to reduce the number of result rows into a single row for every group; instead, we want to produce an aggregated value for every input row. In this case, OVER aggregations can be used to serve as the basis for more advanced queries like this.
+2. When you perform aggregation in SQL, generally the query reduces the number of result rows to one for every group specified in the `GROUP BY`. In the case, we do not want to reduce the number of result rows into a single row for every group; instead, we want to produce an aggregated value for every input row. In this case, OVER aggregations can be used to serve as the basis for more advanced queries like this.
 ```sql
 INSERT INTO potential_fraud
 WITH aggregated_transactions AS (
@@ -576,7 +576,7 @@ SELECT * FROM aggregated_transactions WHERE transaction_count > 5
 ```
 > **Note:** The [WITH](https://docs.confluent.io/cloud/current/flink/reference/queries/with.html) clause provides a way to write auxiliary statements for use in a larger query. These statements, which are often referred to as Common Table Expressions (CTE), can be thought of as defining temporary views that exist just for one query.
 
-3. Observe the aggregated and filtered records in ```potential_fraud``` table by running the following query. All record's ```transaction_count``` should be more than ```5```.
+3. Observe the aggregated and filtered records in `potential_fraud` table by running the following query. All record's `transaction_count` should be more than `5`.
 ```sql
 SELECT * FROM potential_fraud
 ```
@@ -662,7 +662,7 @@ confluent environment <env-id>
 ```bash
 confluent flink connection create my-connection --cloud aws --region <your-flink-region> --type bedrock --endpoint https://bedrock-runtime.us-west-2.amazonaws.com/model/us.anthropic.claude-3-sonnet-20240229-v1:0/invoke --aws-access-key <API Key> --aws-secret-key <API Secret>
 ```
-> **Note:** The model endpoint should be ```https://bedrock-runtime.<REGION>.amazonaws.com/model/<MODEL_ID>/invoke```.
+> **Note:** The model endpoint should be `https://bedrock-runtime.<REGION>.amazonaws.com/model/<MODEL_ID>/invoke`.
 
 <div align="center">
     <img src="images/bedrock-7.png" width=100% height=100%>
