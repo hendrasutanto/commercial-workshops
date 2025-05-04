@@ -700,6 +700,8 @@ SELECT * FROM potential_fraud, LATERAL TABLE(ML_PREDICT('FraudDetectionModel',
     <img src="images/bedrock-8.png" width=100% height=100%>
 </div>
 
+10. Stop the query.
+
 ***
 
 ## <a name="step-9"></a>Clean Up Resources
