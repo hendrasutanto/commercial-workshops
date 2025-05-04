@@ -445,7 +445,7 @@ INNER JOIN customers ON transactions.customer_id = customers.customer_id
 SELECT * FROM enriched_transactions_regular_join
 ```
 
-8. The regular join will produce a lot of new records whenever the customer updates their email or credit card information, which is not quite the result that we are looking for. So let's go ahead and **Stop** the above **Insert** and **Select** statement.
+8. The regular join will produce new records whenever the customer updates their email or credit card information, which is not quite the result that we are looking for. So let's go ahead and **Stop** the above **Insert** and **Select** statement.
 
 9. The ```transactions``` stream needs to join with the ```customers``` and ```credit_cards``` information as of the time of the ```transactions```. To achieve this, we need to use a **temporal join** because the join results depend on the time relationship of the rows.
 
