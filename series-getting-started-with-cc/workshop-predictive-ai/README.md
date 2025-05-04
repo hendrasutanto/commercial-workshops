@@ -97,7 +97,7 @@ An environment contains clusters and its deployed components such as Apache Flin
 </div>
 
 4. Click **Begin Configuration**.
-5. For the purpose of this lab, choose “AWS“ Cloud Provider, region of your choice, and “single“ availability zone.
+5. For the purpose of this lab, choose ```AWS``` Cloud Provider, region of your choice, and ```single``` availability zone.
 6. Specify a **Cluster Name**. For the purpose of this lab, any name will work here.
 
 <div align="center" padding=25px>
@@ -122,7 +122,7 @@ An environment contains clusters and its deployed components such as Apache Flin
     <img src="images/create-flink-pool-2.png" width=50% height=50%>
 </div>
 
-3. Name you Pool Name and set the capacity units (CFUs) to **5**. Click **Finish**.
+3. Name you Pool Name and set the capacity units (CFUs) to ```5```. Click **Finish**.
 
 <div align="center" padding=25px>
     <img src="images/create-flink-pool-3.png" width=50% height=50%>
@@ -160,14 +160,14 @@ An environment contains clusters and its deployed components such as Apache Flin
 
 2. Click on **Cluster Settings**. This is where you can find your *Cluster ID, Bootstrap Server, Cloud Details, Cluster Type,* and *Capacity Limits*.
 3. On the same navigation menu, select **Topics** and click **Create Topic**. 
-4. Enter **customers** as the topic name, **1** as the number of partitions, skip the data contract and then click **Create with defaults**.'
+4. Enter ```customers``` as the topic name, ```1``` as the number of partitions, skip the data contract and then click **Create with defaults**.'
 
 <div align="center" padding=25px>
     <img src="images/create-topic.png" width=50% height=50%>
 </div>
 
-5. Repeat the previous step and create a second topic name **credit_cards** and **1** as the number of partitions and skip the data contract.
-6. Repeat the previous step and create a second topic name **transactions** and **1** as the number of partitions and skip the data contract.
+5. Repeat the previous step and create a second topic name ```credit_cards``` and ```1``` as the number of partitions and skip the data contract.
+6. Repeat the previous step and create a second topic name ```transactions``` and ```1``` as the number of partitions and skip the data contract.
 
 > **Note:** Topics have many configurable parameters. A complete list of those configurations for Confluent Cloud can be found [here](https://docs.confluent.io/cloud/current/using/broker-config.html). If you are interested in viewing the default configurations, you can view them in the Topic Summary on the right side. 
 
@@ -176,9 +176,9 @@ An environment contains clusters and its deployed components such as Apache Flin
 ***
 
 ## <a name="step-5"></a>Create Datagen Connectors for Customers, Credit Cards, and Transactions
-The next step is to produce sample data using the Datagen Source connector. You will create two Datagen Source connectors. One connector will send sample customer data to **customers** topic, the other connector will send sample credit card data to **credit_cards** topic.
+The next step is to produce sample data using the Datagen Source connector. You will create three Datagen Source connectors. One connector will send sample customer data to ```customers``` topic, the other connector will send sample credit card data to ```credit_cards``` topic, and the final connector will send sample transaction data to ```transactions``` topic.
 
-1. First, you will create the connector that will send data to **customers**. From the Confluent Cloud UI, click on the **Connectors** tab on the navigation menu. Click on the **Datagen Source** icon.
+1. First, you will create the connector that will send data to ```customers```. From the Confluent Cloud UI, click on the **Connectors** tab on the navigation menu. Click on the **Datagen Source** icon.
 
 <div align="center" padding=25px>
     <img src="images/connectors.png" width=75% height=75%>
@@ -260,8 +260,8 @@ The next step is to produce sample data using the Datagen Source connector. You 
     <img src="images/connectors-5.png" width=75% height=75%>
 </div>
 
-8. After few seconds Connector would be provisioned and running. Check for messages in the **customers** topic by navigating to the topics section.
-9. Repeat the same steps to create a connector for **credit_cards** topic by using the below schema but use existing API key this time.
+8. After few seconds Connector would be provisioned and running. Check for messages in the ```customers``` topic by navigating to the topics section.
+9. Repeat the same steps to create a connector for ```credit_cards``` topic by using the below schema but use existing API key this time.
 <div align="center" padding=25px>
     <img src="images/connectors-6.png" width=75% height=75%>
 </div>
@@ -314,7 +314,7 @@ The next step is to produce sample data using the Datagen Source connector. You 
     <img src="images/connectors-7.png" width=75% height=75%>
 </div>
 
-10. Repeat the same steps to create a connector for **transactions** topic by using the below schema but use existing API key this time.
+10. Repeat the same steps to create a connector for ```transactions``` topic by using the below schema but use existing API key this time.
 <div align="center" padding=25px>
     <img src="images/connectors-6.png" width=75% height=75%>
 </div>
@@ -390,7 +390,7 @@ The next step is to produce sample data using the Datagen Source connector. You 
 > * Click on the *Connector Name*, go to *Settings*, and re-enter your API key and secret. Double check there are no extra spaces at the beginning or end of the key and secret that you may have accidentally copied and pasted.
 > * If neither of these steps work, try creating another Datagen connector.
 
-11. You can view the sample data flowing into topics in real time. Navigate to  the **Topics** tab and then click on the **customers**, **credit_cards**, and **transactions**. You can view the production and consumption throughput metrics here.
+11. You can view the sample data flowing into topics in real time. Navigate to  the **Topics** tab and then click on the ```customers```, ```credit_cards```, and ```transactions```. You can view the production and consumption throughput metrics here.
 
 12. Click on **Messages**.
 
