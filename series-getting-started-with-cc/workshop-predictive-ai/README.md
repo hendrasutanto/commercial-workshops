@@ -316,7 +316,7 @@ The next step is to produce sample data using the Datagen Source connector. You 
 
 10. Repeat the same steps to create a connector for **transactions** topic by using the below schema but use existing API key this time.
 <div align="center" padding=25px>
-    <img src="images/connectors-8.png" width=75% height=75%>
+    <img src="images/connectors-6.png" width=75% height=75%>
 </div>
 
 ```
@@ -382,7 +382,7 @@ The next step is to produce sample data using the Datagen Source connector. You 
 }
 ```
 <div align="center" padding=25px>
-    <img src="images/connectors-9.png" width=75% height=75%>
+    <img src="images/connectors-8.png" width=75% height=75%>
 </div>
 
 > **Note:** If the connectors fails, there are a few different ways to troubleshoot the error:
