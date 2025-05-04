@@ -685,7 +685,7 @@ WITH (
 9. Now let's invoke the model and get the results.
 
 ```sql
-SELECT * FROM potential_fraud, LATERAL TABLE(ML_PREDICT('FraudDetectionModel',
+SELECT transaction_id, message FROM potential_fraud, LATERAL TABLE(ML_PREDICT('FraudDetectionModel',
   CONCAT(
     'Credit Card Number: ', CAST(credit_card_number AS STRING),
     ', Credit Card Maximum Limit: $', CAST(maximum_limit AS STRING),
