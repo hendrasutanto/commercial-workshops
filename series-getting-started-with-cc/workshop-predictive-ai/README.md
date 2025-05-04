@@ -515,15 +515,6 @@ INNER JOIN credit_cards_rekeyed FOR SYSTEM_TIME AS OF transactions.`$rowtime` ON
 INNER JOIN customers_rekeyed FOR SYSTEM_TIME AS OF transactions.`$rowtime`  ON transactions.customer_id = customers_rekeyed.customer_id
 ```
 
-While it is not covered in this lab, ***Windows*** are central to processing infinite streams. Windows split the stream into “buckets” of finite size, over which you can apply computations. This document focuses on how windowing is performed in Confluent Cloud for Apache Flink and how you can benefit from windowed functions.
-
-Flink provides several window table-valued functions (TVF) to divide the elements of your table into windows, including:
-
-a. [Tumble Windows](https://docs.confluent.io/cloud/current/flink/reference/queries/window-tvf.html#flink-sql-window-tvfs-tumble)
-<br> 
-b. [Hop Windows](https://docs.confluent.io/cloud/current/flink/reference/queries/window-tvf.html#flink-sql-window-tvfs-hop)
-<br> 
-c. [Cumulate Windows](https://docs.confluent.io/cloud/current/flink/reference/queries/window-tvf.html#flink-sql-window-tvfs-cumulate)
 <br> 
 
 ***
@@ -573,6 +564,19 @@ SELECT
     ) AS transaction_count
 FROM enriched_transactions_temporal_join
 ```
+
+***Windows*** are central to processing infinite streams. Windows split the stream into “buckets” of finite size, over which you can apply computations. This document focuses on how windowing is performed in Confluent Cloud for Apache Flink and how you can benefit from windowed functions.
+
+Flink provides several window table-valued functions (TVF) to divide the elements of your table into windows, including:
+
+a. [Tumble Windows](https://docs.confluent.io/cloud/current/flink/reference/queries/window-tvf.html#flink-sql-window-tvfs-tumble)
+<br> 
+b. [Hop Windows](https://docs.confluent.io/cloud/current/flink/reference/queries/window-tvf.html#flink-sql-window-tvfs-hop)
+<br> 
+c. [Cumulate Windows](https://docs.confluent.io/cloud/current/flink/reference/queries/window-tvf.html#flink-sql-window-tvfs-cumulate)
+<br> 
+
+***
 
 ## <a name="step-8"></a>Connect Flink with Bedrock Model
 The next step is to create a integrated model from AWS Bedrock with Flink on Confluent Cloud.
@@ -644,6 +648,7 @@ SELECT message FROM fraudulent_transactions, LATERAL TABLE(ML_PREDICT('Notificat
 <div align="center" padding=25px>
     <img src="images/ai_messages.png" width=75% height=75%>
 </div>
+
 ***
 
 ## <a name="step-9"></a>Flink Monitoring
@@ -658,8 +663,7 @@ SELECT message FROM fraudulent_transactions, LATERAL TABLE(ML_PREDICT('Notificat
     <img src="images/flink-compute-pool-tile.png" width=40% height=40%>
 </div>
 
-<br> 
-
+<br>
 
 ***
 
