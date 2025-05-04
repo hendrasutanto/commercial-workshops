@@ -526,6 +526,8 @@ INNER JOIN customers_rekeyed FOR SYSTEM_TIME AS OF transactions.`$rowtime`  ON t
 ```sql
 SELECT * FROM enriched_transactions_temporal_join
 ```
+
+14. Stop the **SELECT** query once you're done with the observation.
 <br> 
 
 ***
@@ -556,6 +558,7 @@ CREATE TABLE potential_fraud (
 2. When you perform aggregation in SQL, generally the query reduces the number of result rows to one for every group specified in the ```GROUP BY```. In the case, we do not want to reduce the number of result rows into a single row for every group; instead, we want to produce an aggregated value for every input row. In this case, OVER aggregations can be used to serve as the basis for more advanced queries like this.
 ```sql
 INSERT INTO potential_fraud
+WITH aggregated_transactions AS (
 SELECT 
     transaction_id,
     credit_card_number,
@@ -574,9 +577,19 @@ SELECT
         RANGE BETWEEN INTERVAL '10' MINUTES PRECEDING AND CURRENT ROW
     ) AS transaction_count
 FROM enriched_transactions_temporal_join
+)
+SELECT * FROM aggregated_transactions WHERE transaction_count > 5
+```
+> **Note:** The [WITH](https://docs.confluent.io/cloud/current/flink/reference/queries/with.html) clause provides a way to write auxiliary statements for use in a larger query. These statements, which are often referred to as Common Table Expressions (CTE), can be thought of as defining temporary views that exist just for one query.
+
+3. Observe the aggregated and filtered records in ```potential_fraud``` table by running the following query. All record's ```transaction_count``` should be more than ```5```.
+```sql
+SELECT * FROM potential_fraud
 ```
 
-***Windows*** are central to processing infinite streams. Windows split the stream into “buckets” of finite size, over which you can apply computations. This document focuses on how windowing is performed in Confluent Cloud for Apache Flink and how you can benefit from windowed functions.
+4. Stop the **SELECT** query once you're done with the observation.
+
+Additional info: Windows are central to processing infinite streams. Windows split the stream into “buckets” of finite size, over which you can apply computations. This document focuses on how windowing is performed in Confluent Cloud for Apache Flink and how you can benefit from windowed functions.
 
 Flink provides several window table-valued functions (TVF) to divide the elements of your table into windows, including:
 
