@@ -610,7 +610,7 @@ The next step is to create a integrated model from AWS Bedrock with Flink on Con
 confluent login
 ```
 
-2. Make sure you prepare your AWS API Key and Secret to create connection to the Bedrock. (Would be provided in the workshop)
+2. Make sure you prepare your AWS API Key and Secret to create connection to the Bedrock.
 
 3. Make sure you are using the right environment and right cluster to create the connection. Verify by performing the following.
 ```bash
@@ -620,7 +620,7 @@ confluent kafka cluster list
 confluent kafka cluster use <cluster-id>
 ```
 
-> **Note:** If you doesn't have any user you could check the step below to create user with full access to Bedrock and creating API key and secret. You could skip this step if you already have user and api key with full access to bedrock.
+> **Note:** If you doesn't have any AWS user you could check the step below to create user with full access to Bedrock and creating API key and secret. You could skip this step if you already have user and api key with full access to bedrock.
 
 >Go to **AWS IAM>User** and create User
 <div align="center">
@@ -654,20 +654,31 @@ confluent flink connection create my-connection --cloud aws --region us-east-1 -
 ```
 3. After creating connection, we need to create the model in Flink before we could invoke on our query.
 ```sql
-CREATE MODEL NotificationEngine
+CREATE MODEL FraudDetectionModel
 INPUT (details STRING)
 OUTPUT (message STRING)
 WITH (
   'task' = 'text_generation',
   'provider' = 'bedrock',
-  'bedrock.connection' = 'my-connection'
+  'bedrock.PARAMS.max_tokens' = '4092',
+  'bedrock.connection' = 'my-connection',
+  'bedrock.system_prompt' = 'You are an expert in fraud detection. Your tasks is to analyse whether a particular credit card is a fraudulent transaction or not based on the information provided. Begin your response either fraud or not fraud, then followed by your reasoning.'
 );
 ```
 
 5. Now let's invoke the model and get the results.
 
 ```sql
-SELECT message FROM fraudulent_transactions, LATERAL TABLE(ML_PREDICT('NotificationEngine', details));
+SELECT * FROM potential_fraud, LATERAL TABLE(ML_PREDICT('FraudDetectionModel',
+  CONCAT(
+    'Credit Card Number: ', CAST(credit_card_number AS STRING),
+    ', Credit Card Maximum Limit: $', CAST(maximum_limit AS STRING),
+    ', Amount Spent for this transaction: $', CAST(amount AS STRING),
+    ', Average Monthly Spending: $', CAST(average_spending_amount AS STRING),
+    ', Total Spending in last 10 minutes: $', CAST(total_amount AS STRING),
+    ', Total Transaction Count in last 10 minutes: ', CAST(transaction_count AS STRING)
+  )
+));
 ```
 <div align="center" padding=25px>
     <img src="images/ai_messages.png" width=75% height=75%>
