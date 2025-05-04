@@ -354,7 +354,7 @@ The next step is to produce sample data using the Datagen Source connector. You 
         "type": "int",
         "arg.properties": {
           "range": {
-            "min": 500,
+            "min": 1,
             "max": 2000
           }
         }
