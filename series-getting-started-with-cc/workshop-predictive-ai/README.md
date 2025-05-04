@@ -337,13 +337,13 @@ The next step is to produce sample data using the Datagen Source connector. You 
       }
     },
     {
-      "name": "credit_card_number",
+      "name": "customer_id",
       "type": {
-        "type": "long",
+        "type": "int",
         "arg.properties": {
           "range": {
-            "min": 4700000000000000,
-            "max": 4700000000020000
+            "min": 100,
+            "max": 500
           }
         }
       }
