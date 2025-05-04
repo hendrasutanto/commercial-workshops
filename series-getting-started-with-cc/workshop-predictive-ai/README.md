@@ -440,11 +440,16 @@ INNER JOIN customers ON transactions.customer_id = customers.customer_id
 > This operation has important operational implications: it requires to keep both sides of the join input in Flink state forever.
 > Thus, the required state for computing the query result might grow infinitely depending on the number of distinct input rows of all input tables and intermediate join results.
 
-7. The regular join will produce a lot of new records whenever the customer updates their email or credit card information, which is not quite the result that we are looking for. So let's go ahead and **Stop** the above Insert statement.
+7. Observe the enriched records in ```enriched_transactions_regular_join``` table by running the following query.
+```sql
+SELECT * FROM enriched_transactions_regular_join
+```
 
-8. The ```transactions``` stream needs to join with the ```customers``` and ```credit_cards``` information as of the time of the ```transactions```. To achieve this, we need to use a **temporal join** because the join results depend on the time relationship of the rows.
+8. The regular join will produce a lot of new records whenever the customer updates their email or credit card information, which is not quite the result that we are looking for. So let's go ahead and **Stop** the above **Insert** and **Select** statement.
 
-9. **Temporal Table Join** requires primary key in both ```customers``` and ```credit_cards``` tables. So let's go ahead and re-key both tables with the following queries.
+9. The ```transactions``` stream needs to join with the ```customers``` and ```credit_cards``` information as of the time of the ```transactions```. To achieve this, we need to use a **temporal join** because the join results depend on the time relationship of the rows.
+
+10. **Temporal Table Join** requires primary key in both ```customers``` and ```credit_cards``` tables. So let's go ahead and re-key both tables with the following queries.
 ```sql
 CREATE TABLE customers_rekeyed (
     customer_id INT NOT NULL PRIMARY KEY NOT ENFORCED,
@@ -484,7 +489,7 @@ SELECT
 FROM credit_cards
 ```
 
-10. Create an ```enriched_transactions_temporal_join``` table by running the following SQL query.
+11. Create an ```enriched_transactions_temporal_join``` table by running the following SQL query.
 ```sql
 CREATE TABLE enriched_transactions_temporal_join (
     transaction_id BIGINT NOT NULL PRIMARY KEY NOT ENFORCED,
@@ -500,7 +505,7 @@ WITH (
 );
 ```
 
-11. Perform the **temporal join** and insert the result of the join into ```enriched_transactions_temporal_join``` by running the following SQL query.
+12. Perform the **temporal join** and insert the result of the join into ```enriched_transactions_temporal_join``` by running the following SQL query.
 ```sql
 INSERT INTO enriched_transactions_temporal_join
 SELECT 
@@ -516,6 +521,11 @@ INNER JOIN customers_rekeyed FOR SYSTEM_TIME AS OF transactions.`$rowtime`  ON t
 ```
 
 > **Note:** Watch [this video](https://www.youtube.com/watch?v=ChiAXgTuzaA), David Anderson and Dan Weston talk about how and when to use temporal joins to combine your data.
+
+13. Observe the enriched records in ```enriched_transactions_temporal_join``` table by running the following query.
+```sql
+SELECT * FROM enriched_transactions_temporal_join
+```
 <br> 
 
 ***
