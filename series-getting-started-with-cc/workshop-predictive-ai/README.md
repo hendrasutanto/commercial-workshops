@@ -12,15 +12,12 @@
 3. [Create Flink Compute Pool](#step-3)
 4. [Create Topics and walk through Confluent Cloud Dashboard](#step-4)
 5. [Create Datagen Connectors for Customers and Credit Cards](#step-5)
-6. [Create a Producer for transactions topic](#step-6)
-7. [Clone the repository and configure the clients](#step-7)
-8. [Add data contract to transactions topic](#step-8)
-9. [Perform complex joins using Flink to combine the records into one topic](#step-9)
-10. [Consume feature set topic and predict fraud transactions](#step-10)
-11. [Connect Flink with Bedrock Model](#step-11)
-12. [Flink Monitoring](#step-12)
-13. [Clean Up Resources](#step-13)
-14. [Confluent Resources and Further Testing](#step-14)
+6. [Perform complex joins using Flink to combine the records into one topic](#step-6)
+7. [Consume feature set topic and predict fraud transactions](#step-7)
+8. [Connect Flink with Bedrock Model](#step-8)
+9. [Flink Monitoring](#step-9)
+10. [Clean Up Resources](#step-10)
+11. [Confluent Resources and Further Testing](#step-11)
 ***
 
 ## **Prerequisites**
@@ -91,7 +88,7 @@ An environment contains clusters and its deployed components such as Apache Flin
 
 2. Now that you have an environment, click **Create Cluster**. 
 
-> **Note:** Confluent Cloud clusters are available in 3 types: Basic, Standard, and Dedicated. Basic is intended for development use cases so you will use that for the workshop. Basic clusters only support single zone availability. Standard and Dedicated clusters are intended for production use and support Multi-zone deployments. If you are interested in learning more about the different types of clusters and their associated features and limits, refer to this [documentation](https://docs.confluent.io/current/cloud/clusters/cluster-types.html).
+> **Note:** Confluent Cloud clusters are available in 5 types: Basic, Standard, Enterprise, Dedicated, and Freight. Basic is intended for development use cases so you will use that for the workshop. Basic clusters only support single zone availability. The other type of clusters are intended for production use and support Multi-zone deployments. If you are interested in learning more about the different types of clusters and their associated features and limits, refer to this [documentation](https://docs.confluent.io/current/cloud/clusters/cluster-types.html).
 
 3. Chose the **Basic** cluster type. 
 
@@ -99,9 +96,9 @@ An environment contains clusters and its deployed components such as Apache Flin
     <img src="images/cluster-type.png" width=50% height=50%>
 </div>
 
-4. Click **Begin Configuration**. 
-5. Choose your preferred Cloud Provider (AWS, GCP, or Azure), region, and availability zone. 
-6. Specify a **Cluster Name**. For the purpose of this lab, any name will work here. 
+4. Click **Begin Configuration**.
+5. For the purpose of this lab, choose AWS Cloud Provider, region, and availability zone.
+6. Specify a **Cluster Name**. For the purpose of this lab, any name will work here.
 
 <div align="center" padding=25px>
     <img src="images/create-cluster.png" width=50% height=50%>
@@ -112,7 +109,7 @@ An environment contains clusters and its deployed components such as Apache Flin
 
 ***
 
-## <a name="step-4"></a>Create a Flink Compute Pool
+## <a name="step-3"></a>Create a Flink Compute Pool
 
 1. On the navigation menu, select **Flink** and click **Create Compute Pool**.
 
@@ -155,7 +152,7 @@ An environment contains clusters and its deployed components such as Apache Flin
 
 ***
 
-## <a name="step-5"></a>Creates Topic and Walk Through Cloud Dashboard
+## <a name="step-4"></a>Creates Topic and Walk Through Cloud Dashboard
 
 1. On the navigation menu, you will see **Cluster Overview**. 
 
@@ -163,13 +160,13 @@ An environment contains clusters and its deployed components such as Apache Flin
 
 2. Click on **Cluster Settings**. This is where you can find your *Cluster ID, Bootstrap Server, Cloud Details, Cluster Type,* and *Capacity Limits*.
 3. On the same navigation menu, select **Topics** and click **Create Topic**. 
-4. Enter **customers** as the topic name, **3** as the number of partitions, skip the data contract and then click **Create with defaults**.'
+4. Enter **customers** as the topic name, **1** as the number of partitions, skip the data contract and then click **Create with defaults**.'
 
 <div align="center" padding=25px>
     <img src="images/create-topic.png" width=50% height=50%>
 </div>
 
-5. Repeat the previous step and create a second topic name **credit_cards** and **3** as the number of partitions and skip the data contract.
+5. Repeat the previous step and create a second topic name **credit_cards** and **1** as the number of partitions and skip the data contract.
 
 > **Note:** Topics have many configurable parameters. A complete list of those configurations for Confluent Cloud can be found [here](https://docs.confluent.io/cloud/current/using/broker-config.html). If you are interested in viewing the default configurations, you can view them in the Topic Summary on the right side. 
 
@@ -177,7 +174,7 @@ An environment contains clusters and its deployed components such as Apache Flin
 
 ***
 
-## <a name="step-6"></a>Create Datagen Connectors for Customers and Credit Cards
+## <a name="step-5"></a>Create Datagen Connectors for Customers and Credit Cards
 The next step is to produce sample data using the Datagen Source connector. You will create two Datagen Source connectors. One connector will send sample customer data to **customers** topic, the other connector will send sample credit card data to **credit_cards** topic.
 
 1. First, you will create the connector that will send data to **customers**. From the Confluent Cloud UI, click on the **Connectors** tab on the navigation menu. Click on the **Datagen Source** icon.
@@ -265,6 +262,10 @@ The next step is to produce sample data using the Datagen Source connector. You 
 
 8. After few seconds Connector would be provisioned and running. Check for messages in the **customers** topic by navigating to the topics section.
 9. Repeat the same steps to create a connector for **credit_cards** topic by using the below schema but use existing API key this time.
+<div align="center" padding=25px>
+    <img src="images/connectors-6.png" width=75% height=75%>
+</div>
+
 ```
 {
   "type": "record",
@@ -277,8 +278,8 @@ The next step is to produce sample data using the Datagen Source connector. You 
         "type": "long",
         "arg.properties": {
           "iteration": {
-            "start": 4738273984732749,
-            "step": 749384739937
+            "start": 4699999999999980,
+            "step": 1
           }
         }
       }
@@ -310,10 +311,6 @@ The next step is to produce sample data using the Datagen Source connector. You 
 }
 ```
 <div align="center" padding=25px>
-    <img src="images/connectors-6.png" width=75% height=75%>
-</div>
-
-<div align="center" padding=25px>
     <img src="images/connectors-7.png" width=75% height=75%>
 </div>
 
@@ -322,7 +319,6 @@ The next step is to produce sample data using the Datagen Source connector. You 
 > * Click on the *Connector Name*, go to *Settings*, and re-enter your API key and secret. Double check there are no extra spaces at the beginning or end of the key and secret that you may have accidentally copied and pasted.
 > * If neither of these steps work, try creating another Datagen connector.
 
-
 11. You can view the sample data flowing into topics in real time. Navigate to  the **Topics** tab and then click on the **customers** and **credit_cards**. You can view the production and consumption throughput metrics here.
 
 12. Click on **Messages**.
@@ -330,92 +326,7 @@ The next step is to produce sample data using the Datagen Source connector. You 
 * You should now be able to see the messages within the UI. You can view the specific messages by clicking the icon.
 ***
 
-## <a name="step-7"></a>Configure the clients.
-The next step is to run the producer to produce transaction records to the **transactions** topic.
-
-1. Open VS Code or any editor of your choice and open the github repository folder and run the following command
-```bash
-cd series-getting-started-with-cc/workshop-predictive-ai
-```
-3. Create a virtual environment for this project and activate it by running the following command
-```bash
-python3 -m venv _venv
-source _venv/bin/activate
-```
-4. Install the dependencies by running the following commmand.
-```bash
-pip3 install -r requirements.txt
-```
-5. Create a ```client.properties``` and ```schema.properties``` files in the current folder. Let these be empty now we'll paste the configurations in the next step.
-
-## <a name="step-8"></a>Create a Python Client for transactions topic
-The next step is to produce sample data using a client. You will configure a python client for **transactions** topic.
-
-1. From the Confluent Cloud UI, click on the **Clients** tab on the navigation menu. Click on the **Add new client** button on the top right.
-<div align="center" padding=25px>
-    <img src="images/producer-1.png" width=75% height=75%>
-</div>
-
-2. Choose **Python** in choose your language option.
-<div align="center" padding=25px>
-    <img src="images/producer-2.png" width=75% height=75%>
-</div>
-
-3. Click on  **Use existing API Key** in select an API key and fill out the downloaded API keys.
-<div align="center" padding=25px>
-    <img src="images/producer-3.png" width=75% height=75%>
-</div>
-
-4. Click on  **Use existing topic** in type **transactions**.
-5. Copy the configuration snippet shown in the screen and paste in ```client.properties``` file.
-```bash
-# Required connection configs for Kafka producer, consumer, and admin
-bootstrap.servers=pkc-p11xm.us-east-1.aws.confluent.cloud:9092
-security.protocol=SASL_SSL
-sasl.mechanisms=PLAIN
-sasl.username=xxxxxxxxxxxx
-sasl.password=xxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
-# Best practice for higher availability in librdkafka clients prior to 1.7
-session.timeout.ms=45000
-
-client.id=ccloud-python-client-3b98b537-adba-4c2d-b36f-79f964f031c0
-
-```
-
-6. Scroll down and click on **View Clients** button. However you can't see any clients yet as there are no applications currently talking to topics yet.
-7. Click on **Environments** in the top left of the screen and choose your environment.
-8. Scroll down at the right hand side of the screen, you'll see the stream governance details like below
-<div align="center" padding=25px>
-    <img src="images/client-1.png" width=75% height=75%>
-</div>
-
-9. Copy the endpoint of Stream Governance API and create a new credentials to access this by clicking on **Add Key**.
-10. Paste the endpoint and API Keys in ```schema.properties``` file like below:
-```bash
-schema.registry.url=https://psrc-em25q.us-east-2.aws.confluent.cloud
-schema.registry.username=xxxxxxxxxx
-schema.registry.password=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-```
-12. Run the admin client to create required topics.
-```bash
-python3 admin_client.py
-```
-You should be able to view the output something like this..
-```bash
-Topic transactions created
-Topic fraudulent_transactions created
-```
-11. Run the ```producer.py``` file by running the following command.
-```bash
-python3 producer.py
-```
-You can see records being published to transactions topic.
-> **Note:** If the producer fails, there are a few different ways to troubleshoot the error:
-> * Click on the *Cluster Overiview*, go to *Cluster Settings*,. Double check there are no extra spaces at the beginning or end of the key and secret that you may have accidentally copied and pasted in ```client.properties``` file also verify the ```bootstrap.servers``` value by comparing it with the *Bootstrap Server* value in the Endpoints section in UI. Also verify the ```schema.properties```
-
-
-## <a name="step-10"></a>Perform complex joins using Flink to combine the records into one topic
+## <a name="step-6"></a>Perform complex joins using Flink to combine the records into one topic
 Kafka topics and schemas are always in sync with our Flink cluster. Any topic created in Kafka is visible directly as a table in Flink, and any table created in Flink is visible as a topic in Kafka. Effectively, Flink provides a SQL interface on top of Confluent Cloud.
 
 1. From the Confluent Cloud UI, click on the **Environments** tab on the navigation menu. Choose your environment.
@@ -511,7 +422,7 @@ b. [Hop Windows](https://docs.confluent.io/cloud/current/flink/reference/queries
 c. [Cumulate Windows](https://docs.confluent.io/cloud/current/flink/reference/queries/window-tvf.html#flink-sql-window-tvfs-cumulate)
 <br> 
 
-## <a name="step-11"></a>Consume feature set topic and predict fraud transactions
+## <a name="step-7"></a>Consume feature set topic and predict fraud transactions
 The next step is to create a consumer for feature set topic and predict the fraudulent transaction.
 
 1. Update ```client.properties``` file with an additional configuration at the end of the file like following.
@@ -540,7 +451,7 @@ SELECT details FROM fraudulent_transactions
     <img src="images/fraud_transactions.png" width=75% height=75%>
 </div>
 
-## <a name="step-12"></a>Connect Flink with Bedrock Model
+## <a name="step-8"></a>Connect Flink with Bedrock Model
 The next step is to create a integrated model from AWS Bedrock with Flink on Confluent Cloud.
 
 1. First, you will create the model connection using Confluent CLI. If you've never installed one, you could install it based on your OS (https://docs.confluent.io/confluent-cli/current/install.html) and login to confluent.
@@ -612,7 +523,7 @@ SELECT message FROM fraudulent_transactions, LATERAL TABLE(ML_PREDICT('Notificat
 </div>
 ***
 
-## <a name="step-13"></a>Flink Monitoring
+## <a name="step-9"></a>Flink Monitoring
 1. Status of all the Flink Jobs is available under **Flink Statements** Tab.
    
 <div align="center">
@@ -629,7 +540,7 @@ SELECT message FROM fraudulent_transactions, LATERAL TABLE(ML_PREDICT('Notificat
 
 ***
 
-## <a name="step-14"></a>Clean Up Resources
+## <a name="step-10"></a>Clean Up Resources
 
 Deleting the resources you created during this workshop will prevent you from incurring additional charges. 
 
@@ -652,9 +563,10 @@ Deleting the resources you created during this workshop will prevent you from in
 <div align="center">
     <img src="images/delete-environment.png" width=50% height=50%>
 </div>
+
 *** 
 
-## <a name="step-15"></a>Confluent Resources and Further Testing
+## <a name="step-11"></a>Confluent Resources and Further Testing
 
 Here are some links to check out if you are interested in further testing:
 - [Confluent Cloud Documentation](https://docs.confluent.io/cloud/current/overview.html)
