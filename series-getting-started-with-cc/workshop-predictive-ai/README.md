@@ -414,7 +414,13 @@ WITH (
 );
 ```
 
-6. Add a new query by clicking on + icon in the left of previous query to Insert records to the above table by running the following query.
+6. To avoid interrupting a long-running Flink query, please always use a new blank query field for each Flink statement in this workshop by clicking the + icon, as shown in the screenshot below.
+
+<div align="center" padding=25px>
+    <img src="images/flink-workspace-3.png" width=75% height=75%>
+</div>
+
+7. Add a new query by clicking on + icon in the left of previous query to Insert records to the above table by running the following query.
 ```sql
 INSERT INTO enriched_transactions_regular_join
 SELECT 
@@ -434,16 +440,16 @@ INNER JOIN customers ON transactions.customer_id = customers.customer_id
 > This operation has important operational implications: it requires to keep both sides of the join input in Flink state forever.
 > Thus, the required state for computing the query result might grow infinitely depending on the number of distinct input rows of all input tables and intermediate join results.
 
-7. Observe the enriched records in `enriched_transactions_regular_join` table by running the following query.
+8. Observe the enriched records in `enriched_transactions_regular_join` table by running the following query.
 ```sql
 SELECT * FROM enriched_transactions_regular_join
 ```
 
-8. The regular join will produce new records whenever the customer updates their email or credit card information, which is not quite the result that we are looking for. So let's go ahead and **Stop** the above **Insert** and **Select** statement.
+9. The regular join will produce new records whenever the customer updates their email or credit card information, which is not quite the result that we are looking for. So let's go ahead and **Stop** the above **Insert** and **Select** statement.
 
-9. The `transactions` stream needs to join with the `customers` and `credit_cards` information as of the time of the `transactions`. To achieve this, we need to use a **temporal join** because the join results depend on the time relationship of the rows.
+10. The `transactions` stream needs to join with the `customers` and `credit_cards` information as of the time of the `transactions`. To achieve this, we need to use a **temporal join** because the join results depend on the time relationship of the rows.
 
-10. **Temporal Table Join** requires primary key in both `customers` and `credit_cards` tables. So let's go ahead and re-key both tables with the following queries.
+11. **Temporal Table Join** requires primary key in both `customers` and `credit_cards` tables. So let's go ahead and re-key both tables with the following queries.
 ```sql
 CREATE TABLE customers_rekeyed (
     customer_id INT NOT NULL PRIMARY KEY NOT ENFORCED,
@@ -483,7 +489,7 @@ SELECT
 FROM credit_cards
 ```
 
-11. Create an `enriched_transactions_temporal_join` table by running the following SQL query.
+12. Create an `enriched_transactions_temporal_join` table by running the following SQL query.
 ```sql
 CREATE TABLE enriched_transactions_temporal_join (
     transaction_id BIGINT NOT NULL PRIMARY KEY NOT ENFORCED,
@@ -499,7 +505,7 @@ WITH (
 );
 ```
 
-12. Perform the **temporal join** and insert the result of the join into `enriched_transactions_temporal_join` by running the following SQL query.
+13. Perform the **temporal join** and insert the result of the join into `enriched_transactions_temporal_join` by running the following SQL query.
 ```sql
 INSERT INTO enriched_transactions_temporal_join
 SELECT 
@@ -516,12 +522,12 @@ INNER JOIN customers_rekeyed FOR SYSTEM_TIME AS OF transactions.`$rowtime`  ON t
 
 > **Note:** Watch [this video](https://www.youtube.com/watch?v=ChiAXgTuzaA), David Anderson and Dan Weston talk about how and when to use temporal joins to combine your data.
 
-13. Observe the enriched records in `enriched_transactions_temporal_join` table by running the following query.
+14. Observe the enriched records in `enriched_transactions_temporal_join` table by running the following query.
 ```sql
 SELECT * FROM enriched_transactions_temporal_join
 ```
 
-14. Stop the **SELECT** query once you're done with the observation.
+15. Stop the **SELECT** query once you're done with the observation.
 <br> 
 
 ***
