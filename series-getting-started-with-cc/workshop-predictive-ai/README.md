@@ -417,7 +417,7 @@ WITH (
 6. To avoid interrupting a long-running Flink query, please always use a new blank query field for each Flink statement in this workshop by clicking the + icon, as shown in the screenshot below.
 
 <div align="center" padding=25px>
-    <img src="images/flink-workspace-3.png" width=75% height=75%>
+    <img src="images/flink-workspace-4.png" width=75% height=75%>
 </div>
 
 7. Add a new query by clicking on + icon in the left of previous query to Insert records to the above table by running the following query.
