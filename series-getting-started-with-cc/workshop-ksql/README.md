@@ -426,7 +426,7 @@ CREATE TABLE stocks_purchased_today AS
     SELECT symbol,
            COUNT(*) AS quantity
     FROM stocks_enriched
-    WINDOW TUMBLING (SIZE 5 MINUTES)
+    WINDOW TUMBLING (SIZE 5 MINUTES, GRACE PERIOD 1 MINUTES)
     GROUP BY symbol;
 ```
 
