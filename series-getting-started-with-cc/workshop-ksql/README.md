@@ -375,7 +375,7 @@ ksqlDB supports several aggregate functions, like `COUNT` and `SUM`, and you can
 1. First, aggregate the data by counting buys and sells of stocks. Navigate back to the Editor and paste the following query to create a new table named **number_of_times_stock_bought**.
 
 ```sql
-CREATE TABLE number_of_times_stock_bought AS
+CREATE TABLE number_of_times_stock_bought WITH (kafka_topic='number_of_times_stock_bought')  AS
     SELECT SYMBOL,
            COUNT(QUANTITY) AS total_times_bought
     FROM STOCKS_STREAM
@@ -398,7 +398,7 @@ SELECT * FROM NUMBER_OF_TIMES_STOCK_BOUGHT EMIT CHANGES;
 3. Next, create a table that calculates the total number of stocks purchased per symbol. You can choose to set `auto.offset.reset=earliest`.
 
 ```sql
-CREATE TABLE total_stock_purchased AS
+CREATE TABLE total_stock_purchased WITH (kafka_topic='total_stock_purchased') AS
     SELECT symbol,
            SUM(QUANTITY) AS TOTAL_QUANTITY
     FROM STOCKS_ENRICHED
@@ -422,7 +422,7 @@ There are a few different Windowing operations you can use with ksqlDB. You can 
 1. In the ksqlDB **Editor**, paste the following command in order to create a windowed table named **stocks_purchased_today** from the **stocks_topic**. You can set the size of the window to any duration. Set it to 5 minutes in this example.
 
 ```sql
-CREATE TABLE stocks_purchased_today AS
+CREATE TABLE stocks_purchased_today WITH (kafka_topic='stocks_purchased_today') AS
     SELECT symbol,
            COUNT(*) AS quantity
     FROM stocks_enriched
@@ -445,7 +445,7 @@ SELECT * FROM STOCKS_PURCHASED_TODAY EMIT CHANGES;
 3. Going along with the theme of fraud detection, create a table named **accounts_to_monitor** with accounts to monitor based on their activity during a given time frame. In the ksqlDB **Editor**, paste the following statement and run the query.
 
 ```sql
-CREATE TABLE accounts_to_monitor AS
+CREATE TABLE accounts_to_monitor WITH (kafka_topic='accounts_to_monitor') AS
     SELECT TIMESTAMPTOSTRING(WINDOWSTART, 'yyyy-MM-dd HH:mm:ss Z') AS WINDOW_START,
            TIMESTAMPTOSTRING(WINDOWEND, 'yyyy-MM-dd HH:mm:ss Z') AS WINDOW_END,
            ACCOUNT,
