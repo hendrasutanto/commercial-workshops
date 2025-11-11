@@ -176,34 +176,21 @@ The next step is to produce sample data using the Datagen Source connector. You 
     <img src="images/connectors.png" width=75% height=75%>
 </div>
 
-2. Enter the following configuration details. The remaining fields can be left blank.
-
-<div align="center">
-
-| setting                            | value                        |
-|------------------------------------|------------------------------|
-| name                               | DatagenSourceConnector_Users |
-| api key                            | [*from step 5* ](#step-5)    |
-| api secret                         | [*from step 5* ](#step-5)    |
-| topic                              | users_topic                  |
-| output message format              | JSON                         |
-| quickstart                         | USERS                        |
-| max interval between messages (ms) | 1000                         |
-| tasks                              | 1                            |
-</div>
-
-<br>
-
-3. Click on **Next**.
-4. Before launching the connector, you should see something similar to the following. If everything looks similar, select **Launch**. 
+2. Click on **Additional configuration** when a pop-up appear.
+3. Select **users_topic** and click **Continue**.
+4. Select **Use an existing API key** and enter the **API key** and **API Secret** generated [*from step 5* ](#step-5) and click **Continue**.
+5. Select **JSON** as the output record value format; select **Users** as the schema and click **Continue**.
+6. Leave the connector sizing to 1 task and click **Continue**.
+7. Enter the connector name **DatagenSourceConnector_Users**.
+8. Before launching the connector, you should see something similar to the following. If everything looks similar, select **Continue** to launch the connector. 
 
 <div align="center" padding=25px>
     <img src="images/add-datagen-conn.png" width=50% height=50%>
 </div>
 
-5. Next, create the second connector that will send data to **stocks_topic**. Click on **+ Add Connector** and then the **datagen Source** icon again. 
+9. Next, create the second connector that will send data to **stocks_topic**. Click on **+ Add Connector** and then the **datagen Source** icon again. 
 
-6. Enter the following configuration details. The remaining fields can be left blank. 
+10. Repeat the steps and enter the following configuration details.
 
 <div align="center">
 
@@ -214,14 +201,13 @@ The next step is to produce sample data using the Datagen Source connector. You 
 | api secret                         | [*from step 5* ](#step-5)    |
 | topic                              | stocks_topic                 |
 | output message format              | JSON                         |
-| quickstart                         | STOCKS                       |
-| max interval between messages (ms) | 1000                         |
+| schema                             | STOCK TRADES                 |
 | tasks                              | 1                            |
 </div>
 
 <br> 
 
-7. Review the output again and then select **Launch**.
+7. Review the output again and then select **Continue** to launch the connector.
 
 > **Note:** It may take a few moments for the connectors to launch. Check the status and when both are ready, the status should show *running*. <br> <div align="center"><img src="images/running-connectors.png" width=75% height=75%></div>
 
