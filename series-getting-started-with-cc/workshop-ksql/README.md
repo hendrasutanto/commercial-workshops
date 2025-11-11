@@ -361,7 +361,7 @@ SELECT * FROM STOCKS_ENRICHED EMIT CHANGES;
 
 > **Note:** Now that you have a stream of records from the left join of the **USERS** table and **STOCKS_STREAM** stream, you can view the relationship between user and trades in real-time.
 
-4. Next, view the topic created when you created the persistent query with the left join. Navigate to the **Topics** tab on the left hand menu and then select the topic prefixed with a unique ID followed by **STOCKS_ENRICHED**. It should resemble **pksqlc-xxxxxSTOCKS_ENRICHED**. 
+4. Next, view the topic created when you created the persistent query with the left join. Navigate to the **Topics** tab on the left hand menu and then select the **stock_enriched** topic. 
 
 <div align="center">
     <img src="images/stocks-enriched-topic.png" width=75% height=75%>
