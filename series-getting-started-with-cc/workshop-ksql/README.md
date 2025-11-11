@@ -333,7 +333,7 @@ A *Persistent Query* runs indefinitely as it processes rows of events and writes
 1. Create a **Persistent Query** named **stocks_enriched** by left joining the stream (**STOCKS_STREAM**) and table (**USERS**). Navigate to the **Editor** and paste the following command.
 
 ```sql
-CREATE STREAM stocks_enriched AS
+CREATE STREAM stocks_enriched WITH (kafka_topic='stocks_enriched_topic') AS
     SELECT users.userid AS userid, 
            regionid, 
            gender, 
