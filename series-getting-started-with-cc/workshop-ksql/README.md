@@ -105,6 +105,9 @@ An environment contains clusters and its deployed components such as Connectors,
 ## <a name="step-3"></a>Create a ksqlDB Application
 
 1. On the **Cluster Overview** page, change the address in your browser by replacing word **overview** with **ksql**
+
+> **Example** https://confluent.cloud/environments/env-10dpvz/clusters/lkc-zxqkg0/ksql
+
 2. On **ksqlDB** page, click **Add ksqlDB cluster**. 
 3. Select **My account** and then **Continue**.
 4. Name you ksqlDB cluster and set the streaming units to **4**. Click **Launch Application!**
